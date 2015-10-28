@@ -1,0 +1,8 @@
+build/
+*.class
+Tossim.pyc
+Tossim.py
+_TOSSIMmodule.so
+app.xml
+simbuild
+TOSSIMmodule.so
