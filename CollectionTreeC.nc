@@ -19,11 +19,11 @@ implementation {
     uint32_t BASE_STATION_TIMER_INTERVAL_MILLI = 2000000; 
     bool SIM_DONE = FALSE; 
 
-    bool results[1][10];
+    bool results[10][1];
 
     bool sendBusy = FALSE;
     uint8_t rand = 0;
-    
+
     uint16_t sampling_round = 0;
     uint16_t SAMPLING_ROUND_LIMIT = 10;
 
@@ -55,8 +55,7 @@ implementation {
             (CollectionMsg*)call Send.getPayload(&packet, sizeof(CollectionMsg));
         //rand = call Random.rand8();
         msg->data = TOS_NODE_ID;
-        //msg->node_id = TOS_NODE_ID;
-        dbg("App", "Sending msg\n");
+        dbg("App", "Sending msg %u\n", msg->data);
         if (call Send.send(&packet, sizeof(CollectionMsg)) != SUCCESS) 
             call Leds.led0On();
         else 
@@ -75,8 +74,12 @@ implementation {
 
     event message_t* 
         Receive.receive(message_t* msg, void* payload, uint8_t len) {
-            dbg("App", "Received msg: from node %u", msg->msg);
-            results[sampling_round][msg->msg - 1] = TRUE;
+            if(sizeof(CollectionMsg) == len){
+                CollectionMsg* pkt = (CollectionMsg*) payload;
+                dbg("App", "Received msg: from node %u \n", pkt->data);
+                //results[sampling_round][(uint16_t)(pkt->data)] = TRUE;
+            }
+
             return msg;
         }
 }
