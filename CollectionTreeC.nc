@@ -6,7 +6,7 @@ module CollectionTreeC {
     uses interface StdControl as RoutingControl;
     uses interface Send;
     uses interface Leds;
-    uses interface Timer<TMilli>;
+    uses interface Timer<TMilli> as SensorTimer;
     uses interface RootControl;
     uses interface Receive;
     uses interface Random;
@@ -18,15 +18,18 @@ implementation {
     uint16_t TIMER_INTERVAL_MILLI = 1000000;
     bool SIM_DONE = FALSE; 
 
-    uint8_t results[1][1];
+    bool results[3][10];
 
     bool sendBusy = FALSE;
     uint8_t rand = 0;
     
+    uint16_t sampling_round = 0;
+    uint16_t SAMPLING_ROUND_LIMIT = 10;
 
 
     typedef nx_struct CollectionMsg {
         nx_uint16_t data;
+        nx_uint16_t node_id;
     } CollectionMsg;
 
     event void Boot.booted() {
@@ -41,7 +44,7 @@ implementation {
             if (TOS_NODE_ID == 0) 
                 call RootControl.setRoot();
             else
-                call Timer.startPeriodic(TIMER_INTERVAL_MILLI);
+                call SensorTimer.startPeriodic(TIMER_INTERVAL_MILLI);
         }
     }
 
@@ -58,7 +61,7 @@ implementation {
         else 
             sendBusy = TRUE;
     }
-    event void Timer.fired() {
+    event void SensorTimer.fired() {
         if (!sendBusy)
             sendMessage();
     }

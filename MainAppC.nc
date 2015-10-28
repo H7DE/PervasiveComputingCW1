@@ -10,7 +10,7 @@ implementation {
     CollectionTreeC.RadioControl -> ActiveMessageC;
     CollectionTreeC.RoutingControl -> Collector;
     CollectionTreeC.Leds -> LedsC;
-    CollectionTreeC.Timer -> TimerMilliC;
+    CollectionTreeC.SensorTimer -> TimerMilliC;
     CollectionTreeC.Send -> CollectionSenderC;
     CollectionTreeC.RootControl -> Collector;
     CollectionTreeC.Receive -> Collector.Receive[0xee];
