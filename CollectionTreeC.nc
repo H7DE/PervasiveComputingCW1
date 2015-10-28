@@ -15,10 +15,11 @@ implementation {
     message_t packet;
     uint8_t no_sensors = 2; // No of nodes that act as sensors
     uint8_t no_sampling_rounds = 1;
-    uint16_t TIMER_INTERVAL_MILLI = 1000000;
+    uint32_t SENSOR_TIMER_INTERVAL_MILLI = 1000000;
+    uint32_t BASE_STATION_TIMER_INTERVAL_MILLI = 2000000; 
     bool SIM_DONE = FALSE; 
 
-    bool results[3][10];
+    bool results[1][10];
 
     bool sendBusy = FALSE;
     uint8_t rand = 0;
@@ -29,7 +30,6 @@ implementation {
 
     typedef nx_struct CollectionMsg {
         nx_uint16_t data;
-        nx_uint16_t node_id;
     } CollectionMsg;
 
     event void Boot.booted() {
@@ -44,7 +44,7 @@ implementation {
             if (TOS_NODE_ID == 0) 
                 call RootControl.setRoot();
             else
-                call SensorTimer.startPeriodic(TIMER_INTERVAL_MILLI);
+                call SensorTimer.startPeriodic(SENSOR_TIMER_INTERVAL_MILLI);
         }
     }
 
@@ -54,7 +54,8 @@ implementation {
         CollectionMsg* msg =
             (CollectionMsg*)call Send.getPayload(&packet, sizeof(CollectionMsg));
         //rand = call Random.rand8();
-        msg->data = rand;
+        msg->data = TOS_NODE_ID;
+        //msg->node_id = TOS_NODE_ID;
         dbg("App", "Sending msg\n");
         if (call Send.send(&packet, sizeof(CollectionMsg)) != SUCCESS) 
             call Leds.led0On();
@@ -74,8 +75,8 @@ implementation {
 
     event message_t* 
         Receive.receive(message_t* msg, void* payload, uint8_t len) {
-            call Leds.led1Toggle();    
-            dbg("App", "Received msg: %u\n", msg->data);
+            dbg("App", "Received msg: from node %u", msg->msg);
+            results[sampling_round][msg->msg - 1] = TRUE;
             return msg;
         }
 }
