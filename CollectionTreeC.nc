@@ -36,7 +36,7 @@ implementation {
         call RoutingControl.start();
         if (TOS_NODE_ID == 0) {
             call RootControl.setRoot();
-        }else{
+        } else {
             call SensorTimer.startOneShot(SENSOR_TIMER_INTERVAL_MILLI);
         }
     }
@@ -57,7 +57,7 @@ implementation {
         msg->data = TOS_NODE_ID;
         msg->round = current_sampling_round; 
 
-        dbg("App", "Sending msg %u\n", msg->data);
+        // dbg("App", "Sending msg %u\n", msg->data);
         if (call Send.send(&packet, sizeof(CollectionMsg)) == SUCCESS){ 
             sendBusy = TRUE;
         }
@@ -74,11 +74,11 @@ implementation {
             sendMessage();
         }
         call SensorTimer.startOneShot(SENSOR_TIMER_INTERVAL_MILLI);
-        
+
     }
-    
+
     event void SensorTimer.fired() {
-            post TimerTask(); 
+        post TimerTask(); 
     }
 
     event void Send.sendDone(message_t* m, error_t err) {
@@ -89,7 +89,7 @@ implementation {
         Receive.receive(message_t* msg, void* payload, uint8_t len) {
             if(sizeof(CollectionMsg) == len){
                 CollectionMsg* pkt = (CollectionMsg*) payload;
-                dbg("App", "Received msg: from node %u, round: %u \n", pkt->data, pkt->round);
+                dbg("App", "Node: %u, Round: %u\n", pkt->data, pkt->round);
             }
             return msg;
         }
