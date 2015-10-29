@@ -26,22 +26,27 @@ implementation {
     typedef nx_struct CollectionMsg {
         nx_uint16_t data;
         nx_uint16_t round;
-   } CollectionMsg;
+    } CollectionMsg;
 
     event void Boot.booted() {
         call RadioControl.start();
+    }
+
+    task void BootTask(){
+        call RoutingControl.start();
+        if (TOS_NODE_ID == 0) {
+            call RootControl.setRoot();
+        }else{
+            call SensorTimer.startOneShot(SENSOR_TIMER_INTERVAL_MILLI);
+        }
     }
 
     event void RadioControl.startDone(error_t err) {
         if (err != SUCCESS)
             call RadioControl.start();
         else {
-            call RoutingControl.start();
-            if (TOS_NODE_ID == 0) {
-                call RootControl.setRoot();
-            }else{
-                call SensorTimer.startOneShot(SENSOR_TIMER_INTERVAL_MILLI);
-            }}
+            post BootTask();
+        }
     }
 
     event void RadioControl.stopDone(error_t err) {}
@@ -51,12 +56,16 @@ implementation {
             (CollectionMsg*)call Send.getPayload(&packet, sizeof(CollectionMsg));
         msg->data = TOS_NODE_ID;
         msg->round = current_sampling_round; 
-       
+
         dbg("App", "Sending msg %u\n", msg->data);
         if (call Send.send(&packet, sizeof(CollectionMsg)) == SUCCESS){ 
-            sendBusy = TRUE;}
+            sendBusy = TRUE;
+        }
     }
-    event void SensorTimer.fired() {
+
+
+    task void TimerTask(){
+        
         if(++current_sampling_round > SAMPLING_ROUND_LIMIT){
             return;    
         }
@@ -65,7 +74,13 @@ implementation {
             sendMessage();
         }
         call SensorTimer.startOneShot(SENSOR_TIMER_INTERVAL_MILLI);
+        
     }
+    
+    event void SensorTimer.fired() {
+            post TimerTask(); 
+    }
+
     event void Send.sendDone(message_t* m, error_t err) {
         sendBusy = FALSE;
     }
