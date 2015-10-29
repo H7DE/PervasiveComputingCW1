@@ -48,6 +48,14 @@ while v.getData() < 10:
 
 print 'Counter variable at node 0 reached 10.'
 """
+m = t.getNode(1)
+simDone = m.getVariable('CollectionTreeC.SIM_DONE').getData()
+print simDone
+while not simDone:
+    t.runNextEvent()
 
+"""
 for i in range(100000):
     t.runNextEvent()
+
+"""

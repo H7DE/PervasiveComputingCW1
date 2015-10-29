@@ -16,7 +16,7 @@ implementation {
     message_t packet;
     uint8_t no_sensors = 2; // No of nodes that act as sensors
     uint8_t no_sampling_rounds = 1;
-    uint32_t SENSOR_TIMER_INTERVAL_MILLI = 1000000;
+    uint32_t SENSOR_TIMER_INTERVAL_MILLI = 2000000;
     uint32_t BASE_STATION_TIMER_INTERVAL_MILLI = 2000000; 
     bool SIM_DONE = FALSE; 
 
