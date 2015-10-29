@@ -7,6 +7,7 @@ module CollectionTreeC {
     uses interface Send;
     uses interface Leds;
     uses interface Timer<TMilli> as SensorTimer;
+    uses interface Timer<TMilli> as BaseStationTimer;
     uses interface RootControl;
     uses interface Receive;
     uses interface Random;
@@ -25,7 +26,7 @@ implementation {
     bool sendBusy = FALSE;
     uint8_t rand = 0;
 
-    uint16_t sampling_round = 0;
+    uint16_t current_sampling_round = 0;
     uint16_t SAMPLING_ROUND_LIMIT = 10;
 
 
@@ -42,11 +43,12 @@ implementation {
             call RadioControl.start();
         else {
             call RoutingControl.start();
-            if (TOS_NODE_ID == 0) 
+            if (TOS_NODE_ID == 0) {
                 call RootControl.setRoot();
-            else
+            //call BaseStationTimer.startPeriodic(BASE_STATION_TIMER_INTERVAL_MILLI);
+            }else{
                 call SensorTimer.startPeriodic(SENSOR_TIMER_INTERVAL_MILLI);
-        }
+        }}
     }
 
     event void RadioControl.stopDone(error_t err) {}
@@ -66,10 +68,16 @@ implementation {
         if (!sendBusy)
             sendMessage();
     }
+    event void BaseStationTimer.fired(){
+        if(++current_sampling_round < SAMPLING_ROUND_LIMIT){
+            //call BaseStationTimer.startOneShot(BASE_STATION_TIMER_INTERVAL_MILLI);
+        } else{
+            SIM_DONE = TRUE;    
+            dbg("App", "Sim finishing\n");
+        }
 
+    }
     event void Send.sendDone(message_t* m, error_t err) {
-        if (err != SUCCESS) 
-            call Leds.led0On();
         sendBusy = FALSE;
     }
 

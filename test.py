@@ -35,22 +35,15 @@ for line in noise:
         for i in range(noNodes):
             t.getNode(i).addNoiseTraceReading(val)
 
-for i in range(noNodes):
+
+#t.getNode(0).bootAtTime(1000);
+for i in range(0,  noNodes):
     t.getNode(i).createNoiseModel()
     t.getNode(i).bootAtTime(i * 2351217 + 23542399)
 
 """
 m = t.getNode(0)
-v = m.getVariable('RadioCountToLedsC.counter')
-
-while v.getData() < 10:
-    t.runNextEvent()
-
-print 'Counter variable at node 0 reached 10.'
-"""
-m = t.getNode(1)
 simDone = m.getVariable('CollectionTreeC.SIM_DONE').getData()
-print simDone
 while not simDone:
     t.runNextEvent()
 
@@ -58,4 +51,3 @@ while not simDone:
 for i in range(100000):
     t.runNextEvent()
 
-"""
