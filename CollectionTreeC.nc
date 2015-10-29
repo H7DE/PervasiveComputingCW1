@@ -11,6 +11,7 @@ module CollectionTreeC {
     uses interface Receive;
     uses interface Random;
 }
+
 implementation {
     message_t packet;
     uint8_t no_sensors = 2; // No of nodes that act as sensors
@@ -19,7 +20,7 @@ implementation {
     uint32_t BASE_STATION_TIMER_INTERVAL_MILLI = 2000000; 
     bool SIM_DONE = FALSE; 
 
-    bool results[10][1];
+    int results[10][1]; /*No sampling round, Sample at that round*/
 
     bool sendBusy = FALSE;
     uint8_t rand = 0;
@@ -77,7 +78,7 @@ implementation {
             if(sizeof(CollectionMsg) == len){
                 CollectionMsg* pkt = (CollectionMsg*) payload;
                 dbg("App", "Received msg: from node %u \n", pkt->data);
-                //results[sampling_round][(uint16_t)(pkt->data)] = TRUE;
+                //results[sampling_round][pkt->data] = TRUE;
             }
 
             return msg;
