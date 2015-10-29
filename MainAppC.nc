@@ -12,7 +12,7 @@ implementation {
     CollectionTreeC.RoutingControl -> Collector;
     CollectionTreeC.Leds -> LedsC;
     CollectionTreeC.SensorTimer -> SensorTimer;
-    CollectionTreeC.BaseStationTimer -> BaseStationTimer;
+    //CollectionTreeC.BaseStationTimer -> BaseStationTimer;
     CollectionTreeC.Send -> CollectionSenderC;
     CollectionTreeC.RootControl -> Collector;
     CollectionTreeC.Receive -> Collector.Receive[0xee];
