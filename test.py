@@ -80,18 +80,12 @@ NODE_TRANSMISSION_ROUND = 6
 #Parse results file
 outFile.seek(0,0)
 resultsList = []
-print outFile
 for line in outFile:
-    print line
     match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
     resultsList.append((match.group(NODE_ID), int(match.group(NODE_TRANSMISSION_ROUND))))
 
-print resultsList
-
 
 #Add result to db
-
-
 db_exist = os.path.exists(db_filename)
 with sqlite3.connect(db_filename) as conn:
     with open(schema_filename, 'rt') as f:
@@ -103,13 +97,12 @@ with sqlite3.connect(db_filename) as conn:
     cursor = conn.cursor()
 
     for i in range(0 , noNodes):
-        cursor.execute('insert into node values (?)', str(i))
-    for (node_id, transmission_round) in resultsList:
-        print (node_id, transmission_round)
+        cursor.execute('insert into node values (?)', (str(i)))
 
     cursor.execute('SELECT * FROM node')
-    print cursor.fetchAll()
-
+    print cursor.fetchall()
+    conn.commit()
+    os.remove(db_filename)
 
 #Perform analytics
 
@@ -117,6 +110,5 @@ with sqlite3.connect(db_filename) as conn:
 
 
 outFile.close()
-os.remove(db_filename)
 
 
