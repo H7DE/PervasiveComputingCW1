@@ -3,28 +3,34 @@ from random import *
 from TOSSIM import *
 from tinyos.tossim.TossimApp import *
 
+import os
+import sqlite3
 
 #Command line arguments parsing
 #TODO: Error handling
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
 
+#Simulation files
+log_file = "output.txt"
+outFile = open(log_file, 'r+')
 
 print("Creating simulation for ",  noNodes, "nodes")
 
 
-
+#Init tossim
 n = NescApp()
 t = Tossim(n.variables.variables())
 r = t.radio()
 
-
-
-outFile = open('output.txt', 'r+')
-
 t.addChannel("Boot", sys.stdout)
 t.addChannel("App", sys.stdout)
 t.addChannel("App", outFile)
+
+
+
+
+
 
 print("Setting up network topology")
 
@@ -56,32 +62,49 @@ while not simDone:
 
 """
 print("Running sim")
-for i in range(100000):
+timer_ticks = 1000;
+for i in range(timer_ticks):
     t.runNextEvent()
 
 #Read output file into db
 NODE_ID = 4
 NODE_TRANSMISSION_ROUND = 6
 
+
+#Parse results file
+outFile.seek(0,0)
 resultsList = []
 for line in outFile:
     match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
     resultsList.append((match.group(NODE_ID), match.group(NODE_TRANSMISSION_ROUND)))
 
 print resultsList
-#Calculate pkt loss
 
-import os
-import sqlite3
 
+#Add result to db
 db_filename = 'wsn.db'
+schema_filename = 'db_schema.sql'
+
+
+db_exist = os.path.exists(db_filename)
 with sqlite3.connect(db_filename) as conn:
+    with open(schema_filename, 'rt') as f:
+        if not db_exist:
+            schema = f.read()
+            conn.executescript(schema)
+    #Insert readings into db
+
     cursor = conn.cursor()
     cursor.execute('SELECT SQLITE_VERSION()')
     data = cursor.fetchone()
     print 'SQLite version: ', data
 
-outFile.close()
+#Perform analytics
 
+#Calculate pkt loss
+
+
+outFile.close()
+os.remove(log_file)
 
 
