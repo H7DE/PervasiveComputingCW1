@@ -8,6 +8,12 @@ import sqlite3
 
 #Command line arguments parsing
 #TODO: Error handling
+
+if len(sys.argv) < 3:
+    print("Usage: test.py <numNodes> <topologyFile>")
+
+
+
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
 
@@ -68,7 +74,8 @@ while not simDone:
 
 """
 print("Running sim")
-timer_ticks = 100000;
+timer_ticks = 1000 * noNodes;
+
 for i in range(timer_ticks):
     t.runNextEvent()
 
@@ -110,8 +117,13 @@ with sqlite3.connect(db_filename) as conn:
 
 #Perform analytics
 
-#Calculate pkt loss
-
+#Topologies
+#MATPLOT LIB
+#Star
+#Grid
+#Random
+#Optimisation
+#Attributes
 
 outFile.close()
 
