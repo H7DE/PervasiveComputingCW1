@@ -1,0 +1,34 @@
+Introduction
+
+For this assignment we introduced the fictional start-up CoolTech®, which provide wireless sensor networks for smart agriculture solutions. A client CSG Agriculture® want to reduce water usage of their irrigation system.
+
+Methodology
+
+In order to implement their system CoolTech® has devised a series of field test.
+They will deploy a wireless sensor network (WSN) across a 100m^2 field. The WSN consist of a single base station node, and n sensor nodes( n>= 1). The sensor node will peridically sample the environment (for data such temperature, humidity etc), which it will attempt to transmit to the base station.
+
+Using multiple base stations would probablity improve the performance of the  simulation and a real WSN however in reality we would probabily only deploy one due to environmental contraints(etc. wiring to a power source).
+
+The WSN program
+
+The nodes are networked together using the Collection Tree protocol(CTP). 
+The main application logic is written inside CollectionTreeC.nc, the runtime behaviour of the application differs for sensor and base station nodes.
+
+The base station node acts as the root of the collection tree, and accepts incoming packets from sensor node within the collection tree hierarchy, it would then attempt to read the packet and perform some analytics. For the simulation the analytics phase is ignored.
+
+Sensor nodes periodically sample data from their sensors(for purpose of the simulation sensing values are spoofed) and transmit the data to the base station.
+
+The testing framework
+
+The file test.py is the top level script used to run and analyse simulations. 
+
+For usage instructions please refer to the README.md file.
+
+Topology files
+
+The LinkLayerModel program from the tinyos java support library is used to generate topology file which specifies which node connect to another node and the associated attenuation between the pairs. 
+
+Analysis
+
+
+

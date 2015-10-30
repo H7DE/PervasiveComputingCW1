@@ -20,7 +20,11 @@ implementation {
 
 
     uint16_t current_sampling_round = 0;
-    uint16_t SAMPLING_ROUND_LIMIT = 10;
+    uint16_t SAMPLING_ROUND_LIMIT = 10000;
+
+//increase sampling limit 
+//readme include in both folders
+//base station node placement
 
 
     typedef nx_struct CollectionMsg {

@@ -9,14 +9,14 @@ import sqlite3
 #Command line arguments parsing
 #TODO: Error handling
 
-if len(sys.argv) < 3:
-    print("Usage: test.py <numNodes> <topologyFile>")
+if len(sys.argv) < 4:
+    print("Usage: test.py <numNodes> <topologyFile> <expectNoPkts>")
 
 
 
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
-
+expectNoPkts = int(sys.argv[3]) #Small hack as variable inspect in tossim doesnt work on lab machines
 
 #Constants
 db_filename = 'wsn.db'
@@ -74,7 +74,7 @@ while not simDone:
 
 """
 print("Running sim")
-timer_ticks = 1000 * noNodes;
+timer_ticks = 1000000 * noNodes;
 
 for i in range(timer_ticks):
     t.runNextEvent()
