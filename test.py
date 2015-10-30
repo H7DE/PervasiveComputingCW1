@@ -101,9 +101,15 @@ with sqlite3.connect(db_filename) as conn:
     #Insert readings into db
 
     cursor = conn.cursor()
-    cursor.execute('SELECT SQLITE_VERSION()')
-    data = cursor.fetchone()
-    print 'SQLite version: ', data
+
+    for i in range(0 , noNodes):
+        cursor.execute('insert into node values (?)', str(i))
+    for (node_id, transmission_round) in resultsList:
+        print (node_id, transmission_round)
+
+    cursor.execute('SELECT * FROM node')
+    print cursor.fetchAll()
+
 
 #Perform analytics
 
@@ -111,6 +117,6 @@ with sqlite3.connect(db_filename) as conn:
 
 
 outFile.close()
-#os.remove(log_file)
+os.remove(db_filename)
 
 
