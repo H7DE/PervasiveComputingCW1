@@ -16,19 +16,16 @@ implementation {
     message_t packet;
     bool sendBusy = FALSE;
 
-    uint16_t SENSOR_TIMER_INTERVAL_MILLI = 2000000;
+    uint16_t SENSOR_TIMER_INTERVAL_MILLI = 200000;
 
 
-    uint16_t current_sampling_round = 0;
-    uint16_t SAMPLING_ROUND_LIMIT = 10000;
-
-//increase sampling limit 
-//readme include in both folders
-//base station node placement
+    uint16_t current_sampling_round = 0; //Current no of samples sent 
+    uint16_t SAMPLING_ROUND_LIMIT = 100; //Max number of samples to send
 
 
+    //Message struct, pkt contains a node id and a what sampling round the pkt was sent in
     typedef nx_struct CollectionMsg {
-        nx_uint16_t data;
+        nx_uint16_t node_id;
         nx_uint16_t round;
     } CollectionMsg;
 
@@ -58,10 +55,10 @@ implementation {
     void sendMessage() {
         CollectionMsg* msg =
             (CollectionMsg*)call Send.getPayload(&packet, sizeof(CollectionMsg));
-        msg->data = TOS_NODE_ID;
+        msg->node_id = TOS_NODE_ID;
         msg->round = current_sampling_round; 
 
-        // dbg("App", "Sending msg %u\n", msg->data);
+        // dbg("App", "Sending msg %u\n", msg->node_id);
         if (call Send.send(&packet, sizeof(CollectionMsg)) == SUCCESS){ 
             sendBusy = TRUE;
         }
@@ -93,7 +90,7 @@ implementation {
         Receive.receive(message_t* msg, void* payload, uint8_t len) {
             if(sizeof(CollectionMsg) == len){
                 CollectionMsg* pkt = (CollectionMsg*) payload;
-                dbg("App", "Node: %u, Round: %u\n", pkt->data, pkt->round);
+                dbg("App", "Node: %u, Round: %u\n", pkt->node_id, pkt->round);
             }
             return msg;
         }

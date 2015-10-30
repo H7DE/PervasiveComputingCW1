@@ -24,10 +24,11 @@ schema_filename = 'db_schema.sql'
 
 #Simulation files
 log_file = "output.txt"
+
 if os.path.exists(log_file):
-    outFile = open(log_file, 'r+')
-else:
-    outFile = open(log_file, 'w+')
+    os.remove(log_file)
+
+outFile = open(log_file, 'w+')
 
 
 
@@ -74,7 +75,7 @@ while not simDone:
 
 """
 print("Running sim")
-timer_ticks = 1000000 * noNodes;
+timer_ticks = 10000 * noNodes;
 
 for i in range(timer_ticks):
     t.runNextEvent()
@@ -110,10 +111,12 @@ with sqlite3.connect(db_filename) as conn:
         cursor.execute('insert or ignore into readings values (? , ?)', x)
 
     cursor.execute('SELECT node.node_id, COUNT(transmission_round) FROM node JOIN readings ON(node.node_id = readings.node_id) GROUP BY node.node_id')
-    print cursor.fetchall()
+    result = cursor.fetchall()
     conn.commit()
 
     os.remove(db_filename)
+
+print result
 
 #Perform analytics
 
