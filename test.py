@@ -33,8 +33,8 @@ n = NescApp()
 t = Tossim(n.variables.variables())
 r = t.radio()
 
-t.addChannel("Boot", sys.stdout)
-t.addChannel("App", sys.stdout)
+#t.addChannel("Boot", sys.stdout)
+#t.addChannel("App", sys.stdout)
 t.addChannel("App", outFile)
 
 
@@ -102,9 +102,10 @@ with sqlite3.connect(db_filename) as conn:
     for x in resultsList:
         cursor.execute('insert or ignore into readings values (? , ?)', x)
 
-    cursor.execute('SELECT * FROM readings')
+    cursor.execute('SELECT node.node_id, COUNT(transmission_round) FROM node JOIN readings ON(node.node_id = readings.node_id) GROUP BY node.node_id')
     print cursor.fetchall()
     conn.commit()
+
     os.remove(db_filename)
 
 #Perform analytics
