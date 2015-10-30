@@ -11,9 +11,19 @@ import sqlite3
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
 
+
+#Constants
+db_filename = 'wsn.db'
+schema_filename = 'db_schema.sql'
+
 #Simulation files
 log_file = "output.txt"
-outFile = open(log_file, 'r+')
+if os.path.exists(log_file):
+    outFile = open(log_file, 'r+')
+else:
+    outFile = open(log_file, 'w+')
+
+
 
 print("Creating simulation for ",  noNodes, "nodes")
 
@@ -26,10 +36,6 @@ r = t.radio()
 t.addChannel("Boot", sys.stdout)
 t.addChannel("App", sys.stdout)
 t.addChannel("App", outFile)
-
-
-
-
 
 
 print("Setting up network topology")
@@ -62,7 +68,7 @@ while not simDone:
 
 """
 print("Running sim")
-timer_ticks = 1000;
+timer_ticks = 100000;
 for i in range(timer_ticks):
     t.runNextEvent()
 
@@ -74,16 +80,16 @@ NODE_TRANSMISSION_ROUND = 6
 #Parse results file
 outFile.seek(0,0)
 resultsList = []
+print outFile
 for line in outFile:
+    print line
     match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
-    resultsList.append((match.group(NODE_ID), match.group(NODE_TRANSMISSION_ROUND)))
+    resultsList.append((match.group(NODE_ID), int(match.group(NODE_TRANSMISSION_ROUND))))
 
 print resultsList
 
 
 #Add result to db
-db_filename = 'wsn.db'
-schema_filename = 'db_schema.sql'
 
 
 db_exist = os.path.exists(db_filename)
@@ -105,6 +111,6 @@ with sqlite3.connect(db_filename) as conn:
 
 
 outFile.close()
-os.remove(log_file)
+#os.remove(log_file)
 
 
