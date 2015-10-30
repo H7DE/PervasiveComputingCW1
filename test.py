@@ -92,14 +92,17 @@ with sqlite3.connect(db_filename) as conn:
         if not db_exist:
             schema = f.read()
             conn.executescript(schema)
-    #Insert readings into db
 
     cursor = conn.cursor()
-
+    cursor.execute('insert into node values (?)', ("1"))
+    #Add each node that participated in simulation
     for i in range(0 , noNodes):
-        cursor.execute('insert into node values (?)', (str(i)))
+        cursor.execute('insert or ignore into node values (?)', (str(i)))
+    #Add node readings
+    for x in resultsList:
+        cursor.execute('insert or ignore into readings values (? , ?)', x)
 
-    cursor.execute('SELECT * FROM node')
+    cursor.execute('SELECT * FROM readings')
     print cursor.fetchall()
     conn.commit()
     os.remove(db_filename)
