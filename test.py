@@ -5,7 +5,9 @@ from tinyos.tossim.TossimApp import *
 
 import os
 import sqlite3
+import StringIO
 
+from genTopology import *
 #Command line arguments parsing
 #TODO: Error handling
 
@@ -13,7 +15,67 @@ if len(sys.argv) < 4:
     print("Usage: test.py <numNodes> <topologyFile> <expectNoPkts>")
 
 
+def runSim(noNodes):
+    #Init tossim
+    n = NescApp()
+    t = Tossim(n.variables.variables())
+    r = t.radio()
 
+    log_file = "tmp/output.txt"
+    if os.path.exists(log_file):
+        os.remove(log_file)
+
+    output=open(log_file, 'w+')
+
+    #Uncomment for verbose output from simulation
+    #t.addChannel("Boot", sys.stdout)
+    #t.addChannel("App", sys.stdout)
+    t.addChannel("App", output)
+
+    topology = getTopology(noNodes, "random")
+        #f = open(topologyFile, 'r')
+    for (n1, n2, gain) in topology:
+        r.add(n1, n2, gain)
+
+    print("Setting up network noise model")
+    noise = open('meyer-heavy.txt', 'r')
+    for line in noise:
+        s = line.strip()
+        if s:
+            val = int(s)
+            for i in range(noNodes):
+                t.getNode(i).addNoiseTraceReading(val)
+
+    for i in range(0,  noNodes):
+        t.getNode(i).createNoiseModel()
+        t.getNode(i).bootAtTime(i * 100000)
+
+    print("Running sim")
+    timer_ticks = 10000 * noNodes;
+
+    for i in range(timer_ticks):
+        t.runNextEvent()
+
+
+    #Parse output file for results
+    output.seek(0,0)
+    resultsList = []
+
+
+    #Position vars for regex
+    NODE_ID = 4
+    NODE_TRANSMISSION_ROUND = 6
+
+    for line in output:
+        match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
+        resultsList.append((match.group(NODE_ID), int(match.group(NODE_TRANSMISSION_ROUND))))
+    return resultsList
+    #Read output file into db
+
+
+#print runSim()
+print getTopology(2, "random")
+"""
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
 expectNoPkts = int(sys.argv[3]) #Small hack as variable inspect in tossim doesnt work on lab machines
@@ -23,70 +85,20 @@ db_filename = 'wsn.db'
 schema_filename = 'db_schema.sql'
 
 #Simulation files
-log_file = "output.txt"
 
-if os.path.exists(log_file):
-    os.remove(log_file)
-
-outFile = open(log_file, 'w+')
+#outFile = open(log_file, 'w+')
 
 
 
 print("Creating simulation for ",  noNodes, "nodes")
 
 
-#Init tossim
-n = NescApp()
-t = Tossim(n.variables.variables())
-r = t.radio()
-
-#t.addChannel("Boot", sys.stdout)
-t.addChannel("App", sys.stdout)
-t.addChannel("App", outFile)
 
 
 print("Setting up network topology")
-
-f = open(topologyFile, 'r')
-for line in f:
-    s = line.split()
-    if s[0] == "gain":
-        r.add(int(s[1]), int(s[2]), float(s[3]))
-
-print("Setting up network noise model")
-noise = open('meyer-heavy.txt', 'r')
-for line in noise:
-    s = line.strip()
-    if s:
-        val = int(s)
-        for i in range(noNodes):
-            t.getNode(i).addNoiseTraceReading(val)
-
-for i in range(0,  noNodes):
-    t.getNode(i).createNoiseModel()
-    t.getNode(i).bootAtTime(i * 100000)
-
-print("Running sim")
-timer_ticks = 10000 * noNodes;
-
-for i in range(timer_ticks):
-    t.runNextEvent()
-
-#Read output file into db
-
-
+"""
+"""
 #Parse results file
-outFile.seek(0,0)
-resultsList = []
-
-
-#Position vars for regex
-NODE_ID = 4
-NODE_TRANSMISSION_ROUND = 6
-
-for line in outFile:
-    match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
-    resultsList.append((match.group(NODE_ID), int(match.group(NODE_TRANSMISSION_ROUND))))
 
 
 #Add result to db
@@ -112,6 +124,9 @@ with sqlite3.connect(db_filename) as conn:
 
     os.remove(db_filename)
 """
+
+
+"""
 values = [list(t) for t in zip(*result)]
 print (values)
 import matplotlib.pyplot as plt
@@ -130,6 +145,6 @@ plt.show()
 #Optimisation
 #Attributes
 
-outFile.close()
+#outFile.close()
 
 
