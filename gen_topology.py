@@ -3,32 +3,40 @@ import os
 
 
 
+filePath = "tmp/tmp.cfg" #topology file path
+
+
 #Topology configs
 #GRID = "1"
 #UNIFORM = "2"
 #RANDOM = "3"
 
-def createTopology(topology, noNodes):
+def createTopologyConfig(topology, noNodes):
     #Make topology file for linklayermodel
-    filePath = "tmp/tmp.cfg"
     if os.path.exists(filePath):
         os.remove(filePath)
     with open("tmp/tmp.cfg", "w") as config:
-        config.write("PATH_LOSS_EXPONENT = 2.0;\
-        SHADOWING_STANDARD_DEVIATION = 3.2;\
-        D0 = 1.0;\
-        PL_D0 = 55.0;NOISE_FLOOR = -105.0;\
-        S11 = 3.7;\
-        S12 = -3.3;\
-        S21 = -3.3;\
-        S22 = 6.0;\
-        WHITE_GAUSSIAN_NOISE = 4;\
-        TOPOLOGY = {tp};\
-        GRID_UNIT = 1.0;\
-        TOPOLOGY_FILE = topologyFile;\
-        NUMBER_OF_NODES = {nodes};\
-        TERRAIN_DIMENSIONS_X = 100.0;\
-        TERRAIN_DIMENSIONS_Y = 100.0;".format(tp=topology, nodes=noNodes))
+        config.write("PATH_LOSS_EXPONENT = 2.0;\n\
+        SHADOWING_STANDARD_DEVIATION = 3.2;\n\
+        D0 = 1.0;\n\
+        PL_D0 = 55.0;\n\
+        NOISE_FLOOR = -105.0;\n\
+        S11 = 3.7;\n\
+        S12 = -3.3;\n\
+        S21 = -3.3;\n\
+        S22 = 6.0;\n\
+        WHITE_GAUSSIAN_NOISE = 4;\n\
+        TOPOLOGY = {tp};\n\
+        GRID_UNIT = 1.0;\n\
+        TOPOLOGY_FILE = topologyFile;\n\
+        NUMBER_OF_NODES = {tp};\n\
+        TERRAIN_DIMENSIONS_X = 100.0;\n\
+        TERRAIN_DIMENSIONS_Y = 100.0;\n".format(tp=topology, nodes=noNodes))
+
+
+def createLinkGainFile():
+    os.system('cd linklayer; java LinkLayerModel ../{fp}'.format(fp=filePath))
 
 if __name__ == "__main__":
-    createTopology(3, 3)
+    createTopologyConfig(3, 3)
+    createLinkGainFile()
