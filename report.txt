@@ -32,3 +32,16 @@ Analysis
 
 valid for static and low-dynamic environments
 http://www.tinyos.net/tinyos-2.x/doc/html/tutorial/usc-topologies.html
+
+
+#Perform analytics
+
+#Topologies
+#MATPLOT LIB
+#Star
+#Grid
+#Random
+#Optimisation
+#Attributes
+
+#outFile.close()

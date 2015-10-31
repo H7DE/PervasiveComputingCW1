@@ -89,35 +89,12 @@ def addSimResultsToDB(experimentId, experimentType, noNodes, expNoNodeTransmissi
         #Add node readings
         for n, t in resultsList:
             cursor.execute('insert or ignore into readings values (?,?,?)', (experimentId, n, t))
-
-
-#        cursor.execute('SELECT * FROM experiments')
-#        result = cursor.fetchall()
-#        print result
         conn.commit()
 
-"""
-        cursor.execute('SELECT node.node_id, COUNT(transmission_round) FROM node JOIN readings ON(node.node_id = readings.node_id) GROUP BY node.node_id')
-"""
-
-        #os.remove(db_filename)
-
-
-def simulationAnalytics(topo):
-    for i in range(2, 4):
-        exp = "rand_topo_node_" + i
-        res =  runSim(noNodes, topo)
-        addSimResultsToDB(exp, topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
-        """
-        with sqlite3.connect(db_filename) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT * FROM experiments')
-            result = cursor.fetchall()
-            print result
-        """
 
 #No nodes includes sensor nodes
 #Grid/Uniform must be square no
+#Runs a single experiment
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: test.py <numNodes> <topologyType>")
@@ -125,11 +102,7 @@ if __name__ == "__main__":
     noNodes =  int(sys.argv[1])
     topo = sys.argv[2]
     res =  runSim(noNodes, topo)
-  #  res2 =  runSim(noNodes, topo)
-    addSimResultsToDB("exp2", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
-   # addSimResultsToDB("exp2", "random", noNodes, res2)
-   # simulationAnalytics()
-
+    addSimResultsToDB("exp1", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
 
 
 
@@ -141,17 +114,4 @@ plt.plot([sum(values[1])/expectNoPkts])
 plt.ylabel('Pkt loss')
 #plt.set_ylim([0, 100])
 plt.show()
-"""
-#Perform analytics
-
-#Topologies
-#MATPLOT LIB
-#Star
-#Grid
-#Random
-#Optimisation
-#Attributes
-
-#outFile.close()
-"""
 """
