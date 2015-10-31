@@ -20,7 +20,7 @@ EXPECTED_NO_TRANSMISSIONS=100
 #Returns a list of tuples containing (node_id, transmission_round_of_pkt)
 def runSim(noNodes, topologyType):
     #Init tossim
-    t = Tossim()
+    t = Tossim([])
     r = t.radio()
 
     log_file = "tmp/output.txt"
