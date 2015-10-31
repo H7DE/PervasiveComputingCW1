@@ -11,11 +11,11 @@ from genTopology import *
 #Command line arguments parsing
 #TODO: Error handling
 
-if len(sys.argv) < 4:
-    print("Usage: test.py <numNodes> <topologyFile> <expectNoPkts>")
 
 
-def runSim(noNodes):
+#Runs the CollectionTree tinyos program
+#Returns a list of tuples containing (node_id, transmission_round_of_pkt)
+def runSim(noNodes, topologyType):
     #Init tossim
     n = NescApp()
     t = Tossim(n.variables.variables())
@@ -32,8 +32,7 @@ def runSim(noNodes):
     #t.addChannel("App", sys.stdout)
     t.addChannel("App", output)
 
-    topology = getTopology(noNodes, "random")
-        #f = open(topologyFile, 'r')
+    topology = getTopology(noNodes, topologyType)
     for (n1, n2, gain) in topology:
         r.add(n1, n2, gain)
 
@@ -56,7 +55,6 @@ def runSim(noNodes):
     for i in range(timer_ticks):
         t.runNextEvent()
 
-
     #Parse output file for results
     output.seek(0,0)
     resultsList = []
@@ -68,13 +66,16 @@ def runSim(noNodes):
 
     for line in output:
         match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
-        resultsList.append((match.group(NODE_ID), int(match.group(NODE_TRANSMISSION_ROUND))))
+        resultsList.append((match.group(NODE_ID),
+                            int(match.group(NODE_TRANSMISSION_ROUND))))
     return resultsList
-    #Read output file into db
 
 
-#print runSim()
-print getTopology(2, "random")
+#Read output file into db
+
+
+print runSim(3, "random")
+#print getTopology(9, "random")
 """
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
@@ -146,5 +147,9 @@ plt.show()
 #Attributes
 
 #outFile.close()
-
+if __name__ == "__main__"
+    if len(sys.argv) < 4:
+        print("Usage: test.py <numNodes> <topologyFile> <expectNoPkts>")
+        exit()
+    runSim()
 
