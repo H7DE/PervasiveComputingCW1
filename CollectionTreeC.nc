@@ -16,7 +16,7 @@ implementation {
     message_t packet;
     bool sendBusy = FALSE;
 
-    uint16_t SENSOR_TIMER_INTERVAL_MILLI = 200000;
+    uint16_t SENSOR_TIMER_INTERVAL_MILLI = 5000;
 
 
     uint16_t current_sampling_round = 0; //Current no of samples sent 

@@ -103,16 +103,22 @@ def addSimResultsToDB(experimentId, experimentType, noNodes, expNoNodeTransmissi
         #os.remove(db_filename)
 
 
-def simulationAnalytics():
-    with sqlite3.connect(db_filename) as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM experiments')
-        result = cursor.fetchall()
-        print result
-
+def simulationAnalytics(topo):
+    for i in range(2, 4):
+        exp = "rand_topo_node_" + i
+        res =  runSim(noNodes, topo)
+        addSimResultsToDB(exp, topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
+        """
+        with sqlite3.connect(db_filename) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM experiments')
+            result = cursor.fetchall()
+            print result
+        """
 
 #No nodes includes sensor nodes
-#Grid must be square no
+#Grid/Uniform must be square no
+"""
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: test.py <numNodes> <topologyType>")
@@ -121,61 +127,12 @@ if __name__ == "__main__":
     topo = sys.argv[2]
     res =  runSim(noNodes, topo)
   #  res2 =  runSim(noNodes, topo)
-    addSimResultsToDB("exp1", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
+    addSimResultsToDB("exp2", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
    # addSimResultsToDB("exp2", "random", noNodes, res2)
     simulationAnalytics()
-
-
-
 """
-noNodes = int(sys.argv[1])
-topologyFile = sys.argv[2]
-expectNoPkts = int(sys.argv[3]) #Small hack as variable inspect in tossim doesnt work on lab machines
-
-#Constants
-db_filename = 'wsn.db'
-schema_filename = 'db_schema.sql'
-
-#Simulation files
-
-#outFile = open(log_file, 'w+')
 
 
-
-print("Creating simulation for ",  noNodes, "nodes")
-
-
-
-
-print("Setting up network topology")
-"""
-"""
-#Parse results file
-
-
-#Add result to db
-db_exist = os.path.exists(db_filename)
-with sqlite3.connect(db_filename) as conn:
-    with open(schema_filename, 'rt') as f:
-        if not db_exist:
-            schema = f.read()
-            conn.executescript(schema)
-
-    cursor = conn.cursor()
-    #Add each node that participated in simulation
-    for i in range(0 , noNodes):
-        cursor.execute('insert or ignore into node values (?)', (str(i)))
-    #Add node readings
-    for x in resultsList:
-        cursor.execute('insert or ignore into readings values (? , ?)', x)
-
-    cursor.execute('SELECT node.node_id, COUNT(transmission_round) FROM node JOIN readings ON(node.node_id = readings.node_id) GROUP BY node.node_id')
-    result = cursor.fetchall()
-    print result
-    conn.commit()
-
-    os.remove(db_filename)
-"""
 
 
 """
