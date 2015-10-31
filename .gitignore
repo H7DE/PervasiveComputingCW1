@@ -1,5 +1,4 @@
 build/
-*.class
 Tossim.pyc
 Tossim.py
 _TOSSIMmodule.so
