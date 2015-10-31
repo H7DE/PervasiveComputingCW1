@@ -1,5 +1,5 @@
 create table experiments (
-    experiment_id  text primary key
+    experiment_id  text primary key,
     no_nodes integer not null,
     topology_type text not null
 );
