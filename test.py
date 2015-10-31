@@ -1,4 +1,4 @@
-from sys import *
+import sys
 from random import *
 from TOSSIM import *
 from tinyos.tossim.TossimApp import *
