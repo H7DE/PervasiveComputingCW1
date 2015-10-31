@@ -62,7 +62,6 @@ for line in noise:
         for i in range(noNodes):
             t.getNode(i).addNoiseTraceReading(val)
 
-
 for i in range(0,  noNodes):
     t.getNode(i).createNoiseModel()
     t.getNode(i).bootAtTime(i * 100000)
@@ -81,7 +80,7 @@ outFile.seek(0,0)
 resultsList = []
 
 
-#Pos vars for regex
+#Position vars for regex
 NODE_ID = 4
 NODE_TRANSMISSION_ROUND = 6
 

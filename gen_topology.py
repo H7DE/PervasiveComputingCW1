@@ -1,10 +1,7 @@
 #Class for generating topologies using tinyos' linklayermodel
 import os
 
-
-
 filePath = "tmp/tmp.cfg" #topology file path
-
 
 #Topology configs
 #GRID = "1"
@@ -19,7 +16,7 @@ def createTopologyConfig(topology, noNodes):
         os.remove(filePath)
     with open("tmp/tmp.cfg", "w") as config:
         config.write("PATH_LOSS_EXPONENT = 2.0;\n\
-                SHADOWING_STANDARD_DEVIATION = 3.2;\n\
+                SHADOWING_STANDARD_DEVIATION = 3.0;\n\
                 D0 = 1.0;\n\
                 PL_D0 = 55.0;\n\
                 NOISE_FLOOR = -105.0;\n\
@@ -38,6 +35,9 @@ def createTopologyConfig(topology, noNodes):
 
 #Creates a topology file using the LinkLayerModel java prog, file saved at $PROJECTROOT:linklayer/linkgain.out
 def createLinkGainFile():
+    linkgainFile = "linklayer/linkgain.out"
+    if os.path.exists(linkgainFile):
+        os.remove(linkgainFile)
     os.system('cd linklayer; java LinkLayerModel ../{fp}'.format(fp=filePath))
 
 #Returns the contents link gain file as a string
