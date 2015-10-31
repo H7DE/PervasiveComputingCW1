@@ -12,6 +12,10 @@ from genTopology import *
 #TODO: Error handling
 
 
+db_filename = 'wsn.db'
+schema_filename = 'db_schema.sql'
+EXPECTED_NO_TRANSMISSIONS=100
+
 
 #Runs the CollectionTree tinyos program
 #Returns a list of tuples containing (node_id, transmission_round_of_pkt)
@@ -55,6 +59,7 @@ def runSim(noNodes, topologyType):
     for i in range(timer_ticks):
         t.runNextEvent()
 
+
     #Parse output file for results
     output.seek(0,0)
     resultsList = []
@@ -72,10 +77,43 @@ def runSim(noNodes, topologyType):
 
 
 #Read output file into db
+def addSimResultsToDB(noNodes, resultsList):
+    db_exist = os.path.exists(db_filename)
+    with sqlite3.connect(db_filename) as conn:
+        with open(schema_filename, 'rt') as f:
+            if not db_exist:
+                schema = f.read()
+                conn.executescript(schema)
+
+        cursor = conn.cursor()
+        #Add each node that participated in simulation
+        for i in range(0 , noNodes):
+            cursor.execute('insert or ignore into node values (?)', (str(i)))
+        #Add node readings
+        for x in resultsList:
+            cursor.execute('insert or ignore into readings values (? , ?)', x)
+
+        cursor.execute('SELECT node.node_id, COUNT(transmission_round) FROM node JOIN readings ON(node.node_id = readings.node_id) GROUP BY node.node_id')
+        result = cursor.fetchall()
+        print result
+        conn.commit()
+        os.remove(db_filename)
 
 
-print runSim(3, "random")
-#print getTopology(9, "random")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: test.py <numNodes> <topologyType>")
+        exit()
+    noNodes =  int(sys.argv[1])
+    topo = sys.argv[2]
+    res =  runSim(noNodes, topo)
+    addSimResultsToDB(noNodes, res)
+
+
+
+
 """
 noNodes = int(sys.argv[1])
 topologyFile = sys.argv[2]
@@ -147,9 +185,5 @@ plt.show()
 #Attributes
 
 #outFile.close()
-if __name__ == "__main__"
-    if len(sys.argv) < 4:
-        print("Usage: test.py <numNodes> <topologyFile> <expectNoPkts>")
-        exit()
-    runSim()
-
+"""
+"""
