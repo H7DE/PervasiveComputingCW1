@@ -41,7 +41,7 @@ t = Tossim(n.variables.variables())
 r = t.radio()
 
 #t.addChannel("Boot", sys.stdout)
-#t.addChannel("App", sys.stdout)
+t.addChannel("App", sys.stdout)
 t.addChannel("App", outFile)
 
 
@@ -67,13 +67,6 @@ for i in range(0,  noNodes):
     t.getNode(i).createNoiseModel()
     t.getNode(i).bootAtTime(i * 100000)
 
-"""
-m = t.getNode(0)
-simDone = m.getVariable('CollectionTreeC.SIM_DONE').getData()
-while not simDone:
-    t.runNextEvent()
-
-"""
 print("Running sim")
 timer_ticks = 10000 * noNodes;
 
@@ -81,13 +74,17 @@ for i in range(timer_ticks):
     t.runNextEvent()
 
 #Read output file into db
-NODE_ID = 4
-NODE_TRANSMISSION_ROUND = 6
 
 
 #Parse results file
 outFile.seek(0,0)
 resultsList = []
+
+
+#Pos vars for regex
+NODE_ID = 4
+NODE_TRANSMISSION_ROUND = 6
+
 for line in outFile:
     match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
     resultsList.append((match.group(NODE_ID), int(match.group(NODE_TRANSMISSION_ROUND))))
@@ -102,7 +99,6 @@ with sqlite3.connect(db_filename) as conn:
             conn.executescript(schema)
 
     cursor = conn.cursor()
-    cursor.execute('insert into node values (?)', ("1"))
     #Add each node that participated in simulation
     for i in range(0 , noNodes):
         cursor.execute('insert or ignore into node values (?)', (str(i)))
@@ -112,12 +108,19 @@ with sqlite3.connect(db_filename) as conn:
 
     cursor.execute('SELECT node.node_id, COUNT(transmission_round) FROM node JOIN readings ON(node.node_id = readings.node_id) GROUP BY node.node_id')
     result = cursor.fetchall()
+    print result
     conn.commit()
 
     os.remove(db_filename)
-
-print result
-
+"""
+values = [list(t) for t in zip(*result)]
+print (values)
+import matplotlib.pyplot as plt
+plt.plot([sum(values[1])/expectNoPkts])
+plt.ylabel('Pkt loss')
+#plt.set_ylim([0, 100])
+plt.show()
+"""
 #Perform analytics
 
 #Topologies

@@ -30,5 +30,5 @@ The LinkLayerModel program from the tinyos java support library is used to gener
 
 Analysis
 
-
-
+valid for static and low-dynamic environments
+http://www.tinyos.net/tinyos-2.x/doc/html/tutorial/usc-topologies.html
