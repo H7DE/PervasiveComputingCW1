@@ -54,7 +54,7 @@ def createLinkGainFile():
     linkgainFile = "linklayer/linkgain.out"
     if os.path.exists(linkgainFile):
         os.remove(linkgainFile)
-    os.system('cd linklayer; java LinkLayerModel ../{fp}'.format(fp=filePath))
+    os.system('cd linklayer; java -cp . LinkLayerModel ../{fp}'.format(fp=filePath))
 
 def getTopology(noNodes,topology, linkgainFilePath="linklayer/linkgain.out"):
     createTopologyConfig(noNodes, topology)

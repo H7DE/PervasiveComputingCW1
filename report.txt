@@ -18,6 +18,9 @@ The base station node acts as the root of the collection tree, and accepts incom
 
 Sensor nodes periodically sample data from their sensors(for purpose of the simulation sensing values are spoofed) and transmit the data to the base station.
 
+The sensor node will repeatidly 
+
+
 The testing framework
 
 The file test.py is the top level script used to run and analyse simulations. 
