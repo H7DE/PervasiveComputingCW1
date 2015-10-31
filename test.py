@@ -76,7 +76,6 @@ def runSim(noNodes, topologyType):
     return resultsList
 
 
-#Read output file into db
 def addSimResultsToDB(experimentId, experimentType, noNodes, resultsList):
     db_exist = os.path.exists(db_filename)
     with sqlite3.connect(db_filename) as conn:
@@ -87,15 +86,15 @@ def addSimResultsToDB(experimentId, experimentType, noNodes, resultsList):
 
         cursor = conn.cursor()
         #Add each node that participated in simulation
-        cursor.execute('insert or ignore into experiments values (?,?,?)', (experimentId, noNodes, experimentType))
+        cursor.execute('insert or ignore into experiments values (?,?,?,?)', (experimentId, noNodes, experimentType, EXPECTED_NO_TRANSMISSIONS))
         #Add node readings
         for n, t in resultsList:
             cursor.execute('insert or ignore into readings values (?,?,?)', (experimentId, n, t))
 
 
-        cursor.execute('SELECT * FROM experiments')
-        result = cursor.fetchall()
-        print result
+#        cursor.execute('SELECT * FROM experiments')
+#        result = cursor.fetchall()
+#        print result
         conn.commit()
 
 """
@@ -105,6 +104,13 @@ def addSimResultsToDB(experimentId, experimentType, noNodes, resultsList):
         #os.remove(db_filename)
 
 
+def simulationAnalytics():
+    with sqlite3.connect(db_filename) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM experiments')
+        result = cursor.fetchall()
+        print result
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: test.py <numNodes> <topologyType>")
@@ -112,8 +118,10 @@ if __name__ == "__main__":
     noNodes =  int(sys.argv[1])
     topo = sys.argv[2]
     res =  runSim(noNodes, topo)
+    res2 =  runSim(noNodes, topo)
     addSimResultsToDB("exp1", "random", noNodes, res)
-
+    addSimResultsToDB("exp2", "random", noNodes, res2)
+    simulationAnalytics()
 
 
 
