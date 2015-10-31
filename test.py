@@ -97,7 +97,7 @@ def addSimResultsToDB(noNodes, resultsList):
         result = cursor.fetchall()
         print result
         conn.commit()
-        os.remove(db_filename)
+        #os.remove(db_filename)
 
 
 
