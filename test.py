@@ -118,7 +118,6 @@ def simulationAnalytics(topo):
 
 #No nodes includes sensor nodes
 #Grid/Uniform must be square no
-"""
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: test.py <numNodes> <topologyType>")
@@ -129,8 +128,7 @@ if __name__ == "__main__":
   #  res2 =  runSim(noNodes, topo)
     addSimResultsToDB("exp2", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
    # addSimResultsToDB("exp2", "random", noNodes, res2)
-    simulationAnalytics()
-"""
+   # simulationAnalytics()
 
 
 
