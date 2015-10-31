@@ -1,7 +1,6 @@
 import sys
 from random import *
 from TOSSIM import *
-from tinyos.tossim.TossimApp import *
 
 import os
 import sqlite3
@@ -21,8 +20,7 @@ EXPECTED_NO_TRANSMISSIONS=100
 #Returns a list of tuples containing (node_id, transmission_round_of_pkt)
 def runSim(noNodes, topologyType):
     #Init tossim
-    n = NescApp()
-    t = Tossim(n.variables.variables())
+    t = Tossim()
     r = t.radio()
 
     log_file = "tmp/output.txt"
