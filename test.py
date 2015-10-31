@@ -35,7 +35,6 @@ def runSim(noNodes, topologyType):
     #t.addChannel("Boot", sys.stdout)
     #t.addChannel("App", sys.stdout)
     t.addChannel("App", output)
-
     topology = getTopology(noNodes, topologyType)
     for (n1, n2, gain) in topology:
         r.add(n1, n2, gain)
@@ -53,8 +52,8 @@ def runSim(noNodes, topologyType):
         t.getNode(i).createNoiseModel()
         t.getNode(i).bootAtTime(i * 100000)
 
-    print("Running sim")
-    timer_ticks = 10000 * noNodes;
+    print("Running sim(may take a long time)")
+    timer_ticks = 10000 * noNodes * noNodes;
 
     for i in range(timer_ticks):
         t.runNextEvent()
@@ -76,7 +75,7 @@ def runSim(noNodes, topologyType):
     return resultsList
 
 
-def addSimResultsToDB(experimentId, experimentType, noNodes, resultsList):
+def addSimResultsToDB(experimentId, experimentType, noNodes, expNoNodeTransmission, resultsList):
     db_exist = os.path.exists(db_filename)
     with sqlite3.connect(db_filename) as conn:
         with open(schema_filename, 'rt') as f:
@@ -86,7 +85,7 @@ def addSimResultsToDB(experimentId, experimentType, noNodes, resultsList):
 
         cursor = conn.cursor()
         #Add each node that participated in simulation
-        cursor.execute('insert or ignore into experiments values (?,?,?,?)', (experimentId, noNodes, experimentType, EXPECTED_NO_TRANSMISSIONS))
+        cursor.execute('insert or ignore into experiments values (?,?,?,?)', (experimentId, noNodes, experimentType, expNoNodeTransmission))
         #Add node readings
         for n, t in resultsList:
             cursor.execute('insert or ignore into readings values (?,?,?)', (experimentId, n, t))
@@ -111,6 +110,9 @@ def simulationAnalytics():
         result = cursor.fetchall()
         print result
 
+
+#No nodes includes sensor nodes
+#Grid must be square no
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: test.py <numNodes> <topologyType>")
@@ -118,9 +120,9 @@ if __name__ == "__main__":
     noNodes =  int(sys.argv[1])
     topo = sys.argv[2]
     res =  runSim(noNodes, topo)
-    res2 =  runSim(noNodes, topo)
-    addSimResultsToDB("exp1", "random", noNodes, res)
-    addSimResultsToDB("exp2", "random", noNodes, res2)
+  #  res2 =  runSim(noNodes, topo)
+    addSimResultsToDB("exp1", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
+   # addSimResultsToDB("exp2", "random", noNodes, res2)
     simulationAnalytics()
 
 

@@ -2,7 +2,7 @@ create table experiments (
     experiment_id  text primary key,
     no_nodes integer not null,
     topology_type text not null,
-    expected_no_transmission integer not null
+    expected_no_transmission_per_node integer not null
 );
 
 create table readings (
