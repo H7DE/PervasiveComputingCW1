@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 resultsTable = [] #Table of number of nodes and packet transmitted(%)
 
 #Generate a frequency table of (number of node in simulation, percentage of packets transmitted)
-with sqlite3.connect("sample_db/random2_40.db") as conn:
+with sqlite3.connect("sample_db/random.db") as conn:
     cursor = conn.cursor()
     exprRootName= "expr_topo_rand_"
     for i in range(2, 40):
@@ -26,7 +26,12 @@ with sqlite3.connect("sample_db/random2_40.db") as conn:
 
 #Create plot
 plt.plot(*zip(*resultsTable))
-plt.title("Comparing WSN network size with % pkt loss")
+plt.title("Comparing WSN network size with %success rate\n of pkt transmission for random topology")
 plt.xlabel('Number of node in simulation')
 plt.ylabel('% of Pkts successfully transmitted')
+
+
+plt.grid(True)
+plt.xlim(0, 50)
+plt.xticks([x*x for x in range(2, 50)])
 plt.show()

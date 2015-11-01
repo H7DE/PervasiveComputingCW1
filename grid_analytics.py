@@ -7,7 +7,7 @@ resultsTable = [] #Table of number of nodes and packet transmitted(%)
 with sqlite3.connect("sample_db/grid.db") as conn:
     cursor = conn.cursor()
     exprRootName="grid_topo_node_"
-    for i in range(2, 8):
+    for i in range(2, 9):
         numNodes = i*i
         amount_pkt = "select count(*) from readings where\
                 readings.experiment_id = '{exprName}{exprNo}'".format(exprName=exprRootName, exprNo=numNodes)
@@ -23,10 +23,13 @@ with sqlite3.connect("sample_db/grid.db") as conn:
 
         resultsTable.append((numNodes, float(noPkts)/float(maxPkts)*100))
 
-
 #Create plot
 plt.plot(*zip(*resultsTable))
-plt.title("Comparing WSN network size with %success rate of pkt transmission")
+plt.title("Comparing WSN network size with %success rate\n of pkt transmission for grid topology")
 plt.xlabel('Number of node in simulation')
 plt.ylabel('% of Pkts successfully transmitted')
+plt.grid(True)
+plt.xlim(0, 80)
+plt.xticks([x*x for x in range(2, 10)])
+
 plt.show()
