@@ -10,8 +10,6 @@ import re
 import random
 
 from genTopology import *
-#Command line arguments parsing
-#TODO: Error handling
 
 
 db_filename = 'wsn.db'
@@ -32,7 +30,7 @@ def runSim(noNodes, topologyType):
 
     with open(log_file, 'w+') as output:
 
-        #Uncomment for verbose output from simulation
+        #Uncomment/comment for verbose output from simulation
         #t.addChannel("Boot", sys.stdout)
         t.addChannel("App", sys.stdout)
         t.addChannel("App", output)
@@ -55,13 +53,13 @@ def runSim(noNodes, topologyType):
             t.getNode(i).bootAtTime(long(i * 1000 * random.uniform(1, 10)))
 
         print("Running sim(may take a long time)")
- #We need a sufficiently long time to run simulation
+        #We need a sufficiently long time to run simulation
+        #This formula has been experimentally test to do well
         if noNodes <= 20:
             timer_ticks = long(10000 * math.pow(noNodes, 2));
         else:
             timer_ticks = long(1000 * math.pow(noNodes,  3));
 
-        print timer_ticks
         for i in range(timer_ticks):
             t.runNextEvent()
 
