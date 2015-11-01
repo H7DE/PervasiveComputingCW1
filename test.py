@@ -6,6 +6,7 @@ import os
 import sqlite3
 import StringIO
 import re
+from cStringIO import StringIO
 
 from genTopology import *
 #Command line arguments parsing
@@ -32,7 +33,7 @@ def runSim(noNodes, topologyType):
 
     #Uncomment for verbose output from simulation
     #t.addChannel("Boot", sys.stdout)
-    #t.addChannel("App", sys.stdout)
+    t.addChannel("App", sys.stdout)
     t.addChannel("App", output)
     topology = getTopology(noNodes, topologyType)
     for (n1, n2, gain) in topology:
@@ -102,15 +103,6 @@ if __name__ == "__main__":
     topo = sys.argv[2]
     res =  runSim(noNodes, topo)
     addSimResultsToDB("exp1", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
+    print ("Results saved to wsn.db")
 
 
-
-"""
-values = [list(t) for t in zip(*result)]
-print (values)
-import matplotlib.pyplot as plt
-plt.plot([sum(values[1])/expectNoPkts])
-plt.ylabel('Pkt loss')
-#plt.set_ylim([0, 100])
-plt.show()
-"""

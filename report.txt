@@ -9,6 +9,7 @@ They will deploy a wireless sensor network (WSN) across a 100m^2 field. The WSN 
 
 Using multiple base stations would probablity improve the performance of the  simulation and a real WSN however in reality we would probabily only deploy one due to environmental contraints(etc. wiring to a power source).
 
+
 The WSN program
 
 The nodes are networked together using the Collection Tree protocol(CTP). 
@@ -16,20 +17,20 @@ The main application logic is written inside CollectionTreeC.nc, the runtime beh
 
 The base station node acts as the root of the collection tree, and accepts incoming packets from sensor node within the collection tree hierarchy, it would then attempt to read the packet and perform some analytics. For the simulation the analytics phase is ignored.
 
-Sensor nodes periodically sample data from their sensors(for purpose of the simulation sensing values are spoofed) and transmit the data to the base station.
-
-The sensor node will repeatidly 
+Sensor nodes periodically sample data from their sensors(for purpose of the simulation sensing values are spoofed) and transmit the data to the base station for "uint16_t SAMPLING_ROUND_LIMIT" iterations.
+From this value we can estimate the theoretical maximum amount of packets that should be received per node.
 
 
 The testing framework
 
 The file test.py is the top level script used to run and analyse simulations. 
 
-For usage instructions please refer to the README.md file.
+For usage instructions and installation  please refer to the README.md file.
 
 Topology files
 
 The LinkLayerModel program from the tinyos java support library is used to generate topology file which specifies which node connect to another node and the associated attenuation between the pairs. 
+
 
 Analysis
 

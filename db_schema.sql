@@ -8,6 +8,5 @@ create table experiments (
 create table readings (
     experiment_id  text not null references experiments(experiment_id) ON DELETE CASCADE,
     node_id   text not null,
-    transmission_round integer not null,
-    unique(experiment_id, node_id, transmission_round)
+    transmission_round integer not null
 );
