@@ -1,4 +1,9 @@
 # PervasiveComputingCW1
+##Installation
+run the installation script by running 
+**bash install.py
+
+
 ##Usage
 
 test.py {noNodes} {topologyFile}
