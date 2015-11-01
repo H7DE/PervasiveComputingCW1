@@ -31,8 +31,26 @@ Topology files
 
 The LinkLayerModel program from the tinyos java support library is used to generate topology file which specifies which node connect to another node and the associated attenuation between the pairs. 
 
+SQL
 
 Analysis
+Using the python script (test.py), we ran a number of simulation of our tinyos program. In each simulation we varied the topology of the network and the number of nodes.
+
+We explore three different topological configuration; random, grid, uniform, this is because the LinkLayerModel program only provides these. While it is possible to run simulations for other topologies(i.e star, ring) the attenuation values would have to be provided manually, this is likely to cause errors.
+
+To perform the analysis on the results of the simulation sql queries where ran on the dataset.
+As mention beforehand the aim of the WSN program is to have each sensor mote peridically send data to the root mote in the collection tree a finite number of times. The sql query uses this fact to calculate the packet loss.
+
+Using the formula
+
+actual_no_packet_received_at_root/(number of nodes in experiment - 1) * expected no packets
+
+
+
+
+
+
+
 
 valid for static and low-dynamic environments
 http://www.tinyos.net/tinyos-2.x/doc/html/tutorial/usc-topologies.html
