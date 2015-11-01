@@ -5,6 +5,7 @@ from TOSSIM import *
 import os
 import sqlite3
 import StringIO
+import re
 
 from genTopology import *
 #Command line arguments parsing
