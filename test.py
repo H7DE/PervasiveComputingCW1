@@ -2,11 +2,12 @@ import sys
 from random import *
 from TOSSIM import *
 
+import math
 import os
 import sqlite3
 import StringIO
 import re
-from cStringIO import StringIO
+import random
 
 from genTopology import *
 #Command line arguments parsing
@@ -29,49 +30,57 @@ def runSim(noNodes, topologyType):
     if os.path.exists(log_file):
         os.remove(log_file)
 
-    output=open(log_file, 'w+')
+    with open(log_file, 'w+') as output:
 
-    #Uncomment for verbose output from simulation
-    #t.addChannel("Boot", sys.stdout)
-    t.addChannel("App", sys.stdout)
-    t.addChannel("App", output)
-    topology = getTopology(noNodes, topologyType)
-    for (n1, n2, gain) in topology:
-        r.add(n1, n2, gain)
+        #Uncomment for verbose output from simulation
+        #t.addChannel("Boot", sys.stdout)
+        t.addChannel("App", sys.stdout)
+        t.addChannel("App", output)
+        topology = getTopology(noNodes, topologyType)
+        for (n1, n2, gain) in topology:
+            r.add(n1, n2, gain)
 
-    print("Setting up network noise model")
-    noise = open('meyer-heavy.txt', 'r')
-    for line in noise:
-        s = line.strip()
-        if s:
-            val = int(s)
-            for i in range(noNodes):
-                t.getNode(i).addNoiseTraceReading(val)
+        print("Setting up network noise model")
+        noise = open('meyer-heavy.txt', 'r')
+        for line in noise:
+            s = line.strip()
+            if s:
+                val = int(s)
+                for i in range(noNodes):
+                    t.getNode(i).addNoiseTraceReading(val)
 
-    for i in range(0,  noNodes):
-        t.getNode(i).createNoiseModel()
-        t.getNode(i).bootAtTime(i * 100000)
+        #Boot motes and randomised times to minimise radio interference
+        for i in range(0,  noNodes):
+            t.getNode(i).createNoiseModel()
+            t.getNode(i).bootAtTime(long(i * 1000 * random.uniform(1, 10)))
 
-    print("Running sim(may take a long time)")
-    timer_ticks = 10000 * noNodes * noNodes;
+        print("Running sim(may take a long time)")
+ #We need a sufficiently long time to run simulation
+        if noNodes <= 20:
+            timer_ticks = long(10000 * math.pow(noNodes, 2));
+        else:
+            timer_ticks = long(1000 * math.pow(noNodes,  3));
 
-    for i in range(timer_ticks):
-        t.runNextEvent()
+        print timer_ticks
+        for i in range(timer_ticks):
+            t.runNextEvent()
 
 
-    #Parse output file for results
-    output.seek(0,0)
-    resultsList = []
+        #Parse output file for results
+        output.seek(0,0)
+        resultsList = []
 
 
-    #Position vars for regex
-    NODE_ID = 4
-    NODE_TRANSMISSION_ROUND = 6
+        #Position vars for regex
+        NODE_ID = 4
+        NODE_TRANSMISSION_ROUND = 6
 
-    for line in output:
-        match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
-        resultsList.append((match.group(NODE_ID),
-                            int(match.group(NODE_TRANSMISSION_ROUND))))
+        for line in output:
+            match = re.search(r'(\w+) (\S+) (\w+): (\S+), (\w+): (\S+)', line)
+            resultsList.append((match.group(NODE_ID),
+                                int(match.group(NODE_TRANSMISSION_ROUND))))
+        output.flush()
+        output.close()
     return resultsList
 
 
@@ -96,13 +105,14 @@ def addSimResultsToDB(experimentId, experimentType, noNodes, expNoNodeTransmissi
 #Grid/Uniform must be square no
 #Runs a single experiment
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: test.py <numNodes> <topologyType>")
+    if len(sys.argv) != 4:
+        print("Usage: test.py <numNodes> <topologyType> <experimentName>")
         exit()
     noNodes =  int(sys.argv[1])
     topo = sys.argv[2]
+    expName = sys.argv[3]
     res =  runSim(noNodes, topo)
-    addSimResultsToDB("exp1", topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
-    print ("Results saved to wsn.db")
+    addSimResultsToDB(expName, topo, noNodes, EXPECTED_NO_TRANSMISSIONS, res)
+    print ("Experiment: " + expName +" saved to wsn.db")
 
 
