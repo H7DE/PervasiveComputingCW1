@@ -1,2 +1,2 @@
 cd linklayer
-java LinkLayerModel.java
+javac LinkLayerModel.java
